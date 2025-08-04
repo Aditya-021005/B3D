@@ -8,25 +8,31 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x000000);
 
 const camera = new THREE.PerspectiveCamera(
-  75,
+  90,
   window.innerWidth / window.innerHeight,
   0.1,
   1000
 );
-camera.position.set(2, 2, 5);
+camera.position.set(10, 10, 10);
+
+camera.lookAt(0, 0, 0);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.getElementById('three-container').appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
+controls.enableZoom = false;          
+controls.enablePan = false;           
 
+controls.maxPolarAngle = Math.PI / 3;  
+
+controls.target.set(0, 0, 0);
+controls.update();
 
 const light = new THREE.DirectionalLight(0xffffff, 2);
 light.position.set(5, 10, 7.5);
 scene.add(light);
-
 
 const fallbackCube = new THREE.Mesh(
   new THREE.BoxGeometry(1, 1, 1),
@@ -38,18 +44,16 @@ scene.add(fallbackCube);
 const loader = new GLTFLoader();
 let mixer;
 
-console.log("🔄 Attempting to load GLB...");
+console.log(" Attempting to load GLB...");
 
 loader.load(
   '/BOSMcricketAnim1.glb',
   (gltf) => {
-    console.log("✅ GLB loaded successfully:", gltf);
-
+    console.log(" GLB loaded successfully:", gltf);
     const model = gltf.scene;
     model.position.set(0, 0, 0);
     model.scale.set(1, 1, 1);
     scene.add(model);
-
     if (gltf.animations && gltf.animations.length > 0) {
       console.log("🎬 Animations found:", gltf.animations);
       mixer = new THREE.AnimationMixer(model);
@@ -63,10 +67,9 @@ loader.load(
   },
   undefined,
   (error) => {
-    console.error("❌ GLB load error:", error);
+    console.error(" GLB load error:", error);
   }
 );
-
 
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -82,4 +85,4 @@ function animate() {
 }
 animate();
 
-console.log("✅ Scene setup complete.");
+console.log(" Scene setup complete.");
